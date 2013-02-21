@@ -1,0 +1,22 @@
+{
+  "name": "jsxlsx",
+  "version": "0.0.0",
+  "description": "a pur javascript libray to read and write xlsx file",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ash11tw/jsxlsx.git"
+  },
+  "author": "Kyle Lu",
+  "license": "BSD",
+  "readmeFilename": "README.md",
+  "gitHead": "a16c0d6f49eee17f46e13036772c85573492babd",
+  "keywords": [
+    "node",
+    "js",
+    "xlsx"
+  ]
+}
