@@ -1,6 +1,5 @@
 var fs = require('fs')
 	, unzip = require('unzip')
-	, zip = require('zipper')
         , Promise = require("promised-io/promise")
 
 require('node-zip')
