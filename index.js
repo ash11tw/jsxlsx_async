@@ -1,9 +1,9 @@
 var fs = require('fs')
 	,sax = require('sax')
 	, unzip = require('unzip')
+	, zip = require('zipper')
        ,Promise = require("promised-io/promise")
 
-require('node-zip')
 var  SimpleParser = require('./libs/simpleParser')
 	, Parser = require('./libs/parser')
 	, ToXML = require('./libs/toXML')
@@ -13,7 +13,7 @@ var  SimpleParser = require('./libs/simpleParser')
 
 
 module.exports = function(file,cb){
-	var me = this,  _sheets, _sharedStrings, _originalSharedStrings, jszip
+	var me = this,  _sheets, _sharedStrings, _originalSharedStrings, zipper
 		, deferred1 = new Promise.Deferred()
 		, deferred2 = new Promise.Deferred()
 		, deferred3 = new Promise.Deferred()
@@ -66,8 +66,10 @@ module.exports = function(file,cb){
 			*/
 			, updateSheet:function(data,sheetName){
 				var out = Parser.output(data,_originalSharedStrings,_sharedStrings)
-				
-				jszip.file('xl/sharedStrings.xml',ToXML(_originalSharedStrings))
+				if (!zipper){
+					zipper = new zip(file)
+				}	
+				zipper.addFile('xl/sharedStrings.xml',ToXML(_originalSharedStrings))
 			
 				if (_sheets[sheetName]){
 					jszip.file('xl/'+_sheets[sheetName].path,ToXML(out))
