@@ -20,6 +20,7 @@ var defaults =  {
     }
 
 module.exports = function(stream,cb){
+	var stack = [], out = {}
         if (defaults.xmlns) {
         	defaults.xmlnskey = defaults.attrkey + "ns"
       	}
@@ -36,7 +37,6 @@ module.exports = function(stream,cb){
 		normalize: false,
 		xmlns: defaults.xmlns
 	})
-	var stack = [], out = {}
         this.sax.on('opentag',function(node) {
 		var key, obj, _ref
 		, charkey = defaults.charkey

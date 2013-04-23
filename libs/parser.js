@@ -244,7 +244,7 @@ module.exports = (function(){
 					if (cellRaw.v){
 						//value changed
 						if (cell.value != getValue(cellRaw,cell.type,sharedStrings)){
-							if (cell.type != 'number'){
+							if (typeof cell.value != 'number'){
 								cellRaw.v = []
 								index = sharedStrings.indexOf(cell.value) 
 								if (index < 0){
@@ -256,14 +256,16 @@ module.exports = (function(){
 									cellRaw.v[0] = index
 								}
 								cellRaw.$.t = Constants.TYPE['string']
+							
 							}else {
 								cellRaw.v[0] = cell.value
+								delete cellRaw.$.t
 							}
 						}
-					}else { 
+					}else if(cell.value){ 
 						// new cell
 						cellRaw.v = []
-						if (cell.type != 'number'){
+						if (typeof cell.value != 'number'){
 							cellRaw.v = []
 							index = sharedStrings.indexOf(cell.value) 
 							if (index < 0){
@@ -280,6 +282,7 @@ module.exports = (function(){
 							cellRaw.v.push(cell.value)
 						}
 					}
+					
 					rowRaw.c.push(cellRaw)	
 				})
 				out.worksheet.sheetData[0].row.push(rowRaw)

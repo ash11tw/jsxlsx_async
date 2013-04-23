@@ -1,8 +1,9 @@
 var fs = require('fs')
-	,sax = require('sax')
 	, unzip = require('unzip')
 	, zip = require('zipper')
-       ,Promise = require("promised-io/promise")
+        , Promise = require("promised-io/promise")
+
+require('node-zip')
 
 var  SimpleParser = require('./libs/simpleParser')
 	, Parser = require('./libs/parser')
@@ -66,89 +67,86 @@ module.exports = function(file,cb){
 			*/
 			, updateSheet:function(data,sheetName){
 				var out = Parser.output(data,_originalSharedStrings,_sharedStrings)
+				, xlsx
 				if (!zipper){
-					zipper = new zip(file)
+					xlsx = fs.readFileSync(file,'binary')	
+					zipper = new JSZip(xlsx,{base64:false,checkCRC32:true})
 				}	
-				zipper.addFile('xl/sharedStrings.xml',ToXML(_originalSharedStrings))
+				zipper.file('xl/sharedStrings.xml',ToXML(_originalSharedStrings))
 			
 				if (_sheets[sheetName]){
-					jszip.file('xl/'+_sheets[sheetName].path,ToXML(out))
+					zipper.file(_sheets[sheetName].path,ToXML(out))
 				}else {
 					//TODO: create a new sheet
+					throw "the library cannot create a new sheet yet"
 				}	
 				
 			}
 			, output:function(file){
-				var data = jszip.generate({type:'string',compression:'DEFLATE'})
+				var data = zipper.generate({type:'string',compression:'DEFLATE'})
 				fs.writeFileSync(file, data, 'binary')
 			}
 		}	
 	//loading excel file
-	if (file && typeof file === 'string'){
-		fs.exists(file,function(exists){
-			if (!exists){
-				cb("file is not existed")
-				return
-			}
-			var unz = unzip.Parse()
-			unz.on('entry', function(entry) {
-				var out = ''
-				switch (entry.path){
-					case 'xl/_rels/workbook.xml.rels':
-						Xml2js(entry,function(err,data){
-							var reference = {}
-							data.Relationships.Relationship.forEach(function(ref){
-								reference[ref.$.Id] = ref.$.Target
-							})
-							deferred1.resolve(reference)		
-							
+	if (file && typeof file === 'string' && fs.existsSync(file)){
+		var unz = unzip.Parse()
+		unz.on('entry', function(entry) {
+			var out = ''
+			switch (entry.path){
+				case 'xl/_rels/workbook.xml.rels':
+					Xml2js(entry,function(err,data){
+						var reference = {}
+						data.Relationships.Relationship.forEach(function(ref){
+							reference[ref.$.Id] = ref.$.Target
 						})
-						break
-					case 'xl/workbook.xml':
-						Xml2js(entry,function(err,data){
-							var out = {}
-							Promise.when(deferred1.promise,function(reference){
-								data.workbook.sheets[0].sheet.forEach(function(sheet){
-									out[sheet.$.name] = {
-										sheetId:sheet.$.sheetId
-										, path:'xl/'+reference[sheet.$['r:id']]
-									}
-								})
-								deferred2.resolve(out)	
-							})	
-							
-						})
-						break
-					case 'xl/sharedStrings.xml':
-						Xml2js(entry,function(err,data){
-							var out = []
-							data.sst.si.forEach(function(string){
-								if (string.t){
-									//for the case that includes xml:preserve attribute
-									out.push(U.getRichValue(string.t))
-								//rich text
-								}else if (string.r) {
-									out.push(U.getRichValue(string.r))
+						deferred1.resolve(reference)		
+						
+					})
+					break
+				case 'xl/workbook.xml':
+					Xml2js(entry,function(err,data){
+						var out = {}
+						Promise.when(deferred1.promise,function(reference){
+							data.workbook.sheets[0].sheet.forEach(function(sheet){
+								out[sheet.$.name] = {
+									sheetId:sheet.$.sheetId
+									, path:'xl/'+reference[sheet.$['r:id']]
 								}
 							})
-
-							_originalSharedStrings = data
-							deferred3.resolve(out)
+							deferred2.resolve(out)	
+						})	
+						
+					})
+					break
+				case 'xl/sharedStrings.xml':
+					Xml2js(entry,function(err,data){
+						var out = []
+						data.sst.si.forEach(function(string){
+							if (string.t){
+								//for the case that includes xml:preserve attribute
+								out.push(U.getRichValue(string.t))
+							//rich text
+							}else if (string.r) {
+								out.push(U.getRichValue(string.r))
+							}
 						})
-						break
-					default:
-				}
-				entry.autodrain()
-			})
-			 fs.createReadStream(file)
-			.pipe(unz)
-		
-			Promise.all(deferred2.promise,deferred3.promise).then(function(values){
-				_sheets = values[0]
-				_sharedStrings = values[1]
-				cb(null,workbook)
-			},function(err){cb(err)})	
+
+						_originalSharedStrings = data
+						deferred3.resolve(out)
+					})
+					break
+				default:
+			}
+			entry.autodrain()
 		})
+		fs.createReadStream(file)
+		.pipe(unz)
+	
+		Promise.all(deferred2.promise,deferred3.promise).then(function(values){
+			_sheets = values[0]
+			_sharedStrings = values[1]
+			cb(null,workbook)
+		},function(err){cb(err)})	
 	}else {
 		cb("file is required")
 	}
