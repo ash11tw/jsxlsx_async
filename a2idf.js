@@ -56,7 +56,7 @@ var o = new Js('./autocad.xlsx',function(err,o){
 					repeats += 'function(s){ return '+tmp+'},'
 					extRepeat -= 1
 				}else if (!repeat){
-					ret += '		o.'+name+' = '+tmp+"\n"
+					ret += '		o.push('+tmp+")\n"
 				}
 			}
 			return ret
@@ -71,10 +71,11 @@ var o = new Js('./autocad.xlsx',function(err,o){
 		*/
 		function _functionInject(s){
 			
-			s = s.replace(/^([\w\W \t]*)(get[\w]+)\(\)([\w\W]*)/,function(){
+			s = s.replace(/^([\w\W \t]*)(\+? ?get[\w]+)\(\)([\w\W]*)/,function(){
 				var arg = 'R'+Math.floor(Math.random() *100)
-				methods[arguments[2]] = arg	
-				return arguments[1]+'hhaObject[\''+arg +'\']'+arguments[3]
+				methods[arguments[2].replace(/^\+/,'').trim()] = arg
+				console.log(arguments[1].trim().replace(/" ?\+?$/,'')+'hhaObject[\''+arg +'\']'+arguments[3].trim().replace(/" ?\+?$/,''))
+				return arguments[1].trim().replace(/" ?\+?$/,'')+'hhaObject[\''+arg +'\']'+arguments[3].trim().replace(/" ?\+?$/,'')
 			})
 			return s
 		}
@@ -234,9 +235,9 @@ var o = new Js('./autocad.xlsx',function(err,o){
 					idfName = cells[1].value
 					methods = {}
 					moduleText += "	run:function(hhaObject,cb){\n"
-					moduleText += "		var o = {}\n"
+					moduleText += "		var o = []\n"
 					if (idfName){
-						moduleText += "		o.name = '"+idfName+"'\n"
+						moduleText += "		o.push('"+idfName+"')\n"
 					}
 					fieldNames = buildFieldNames(cells)
 					
@@ -260,7 +261,7 @@ var o = new Js('./autocad.xlsx',function(err,o){
 		})
 		moduleText += "}\n"	
 	//	console.log(moduleText)
-		fs.writeFile('/home/luk/Documents/jsxlsx/hhaCad2IdfDefine.js',moduleText,function(er){
+		fs.writeFile('/home/luk/Documents/angusim/libs/defines/hhaCad2IdfDefine.js',moduleText,function(er){
 			if (er) console.log(er)
 		})
 	})
