@@ -237,7 +237,11 @@ var o = new Js('./autocad.xlsx',function(err,o){
 					moduleText += "	run:function(hhaObject,cb){\n"
 					moduleText += "		var o = []\n"
 					if (idfName){
-						moduleText += "		o.push('"+idfName+"')\n"
+						if (/^get/.test(idfName)){
+							moduleText += "		o.push("+_functionInject(idfName)+")\n"
+						}else {
+							moduleText += "		o.push('"+idfName+"')\n"
+						}
 					}
 					fieldNames = buildFieldNames(cells)
 					
