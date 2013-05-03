@@ -1,9 +1,9 @@
 var ENTITIES =
 { 
 //"apos" : "'"
-//"quot" : "\""
+"quot" : "\""
 //, "amp"  : "&"
- "gt"   : ">"
+, "gt"   : ">"
 , "lt"   : "<"
 }
 

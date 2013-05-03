@@ -31,6 +31,8 @@ module.exports = function(path,cb){
 	var o = Js('./systemLoad.xlsx',function(err,o){
 		o.getSheetByName('CRITERIA',function(err,data){
 			//console.log(data)
+			 o.updateSheet(data,'CRITERIA')
+                         o.output('./sysloadtest.xlsx')
 			return
 			var i = 8, max = data.length, out = [],out1={}, temp
 			//get header string

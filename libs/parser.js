@@ -76,8 +76,6 @@ module.exports = (function(){
 				if (/^"[\w\W]*"$/.test(sf)){
 					out.push(sf)
 				}else {
-					console.log(sf)
-					console.log('**r'+_rebuild(sf,master,current))
 					out.push(_rebuild(sf,master,current))
 				}
 			})

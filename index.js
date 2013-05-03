@@ -67,6 +67,10 @@ module.exports = function(file,cb){
 			, updateSheet:function(data,sheetName){
 				var out = Parser.output(data,_originalSharedStrings,_sharedStrings)
 				, xlsx
+		fs.writeFile('/home/luk/Documents/jsxlsx/1.txt',ToXML(out),function(er){
+			if (er) console.log(er)
+		})
+				
 				if (!zipper){
 					xlsx = fs.readFileSync(file,'binary')	
 					zipper = new JSZip(xlsx,{base64:false,checkCRC32:true})
