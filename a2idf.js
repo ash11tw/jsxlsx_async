@@ -50,10 +50,11 @@ var o = new Js('./autocad.xlsx',function(err,o){
 				}
 				if (extStart+3 < i && extRepeat >0){
 					repeat = true
-					tmp = tmp.replace(/^([\w\W]+)(hhaObject\[[\w\W]+\])([\w\W]+)$/,function(){
-						return arguments[1]+'s'+arguments[3]
+					tmp = tmp.replace(/^([\w\W]*)(!!\+hhaObject\[[\w-']+\])([\w\W]+)$/,function(){
+						console.log(arguments)
+						return arguments[1]+'v'+arguments[3]
 					})
-					repeats += 'function(s){ return '+tmp+'},'
+					repeats += 'function(v,hhaObject){ return '+tmp+'},'
 					extRepeat -= 1
 				}else if (!repeat){
 					ret += '		o.push('+tmp+")\n"
@@ -74,7 +75,7 @@ var o = new Js('./autocad.xlsx',function(err,o){
 			s = s.replace(/^([\w\W \t]*)(\+? ?get[\w]+)\(\)([\w\W]*)/,function(){
 				var arg = 'R'+Math.floor(Math.random() *100)
 				methods[arguments[2].replace(/^\+/,'').trim()] = arg
-				console.log(arguments[1].trim().replace(/" ?\+?$/,'')+'hhaObject[\''+arg +'\']'+arguments[3].trim().replace(/" ?\+?$/,''))
+				//console.log(arguments[1].trim().replace(/" ?\+?$/,'')+'hhaObject[\''+arg +'\']'+arguments[3].trim().replace(/" ?\+?$/,''))
 				return arguments[1].trim().replace(/" ?\+?$/,'')+'hhaObject[\''+arg +'\']'+arguments[3].trim().replace(/" ?\+?$/,'')
 			})
 			return s

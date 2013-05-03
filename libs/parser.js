@@ -57,88 +57,48 @@ module.exports = (function(){
 			}
 		}else {
 			//TODO: better handling this situation
-			throw 'references should have the same value in col or row'
+			throw new Error('references should have the same value in col or row')
 		}
 	}	
 
 	function getRealFormula(reference,formula){
 		var f = sharedFormulas[formula.$.si]
-		, locate, out, beReplaced, replace
+		, master, current, fs = [],out = []
 		if (!f){
 			//TODO: better handling this situation
-			throw 'no shared formula found'
+			throw new Error('no shared formula found')
 		}else {
-			beReplaced = U.cellReference(f.r)
-			replace = U.cellReference(reference)
-			if (f.ref.type == 'col'){
-				//we need to replace A-Z 
-				return _rebuild(f.f,beReplaced.col,replace.col,'col')
-			}else {
-				//we need to replace row number
-				return _rebuild(f.f,beReplaced.row,replace.row,'row')
-			}
+			master = U.cellReference(f.r)
+			current = U.cellReference(reference)
+			fs = f.f.split('&')
+			fs.forEach(function(sf){
+				//comment
+				if (/^"[\w\W]*"$/.test(sf)){
+					out.push(sf)
+				}else {
+					console.log(sf)
+					console.log('**r'+_rebuild(sf,master,current))
+					out.push(_rebuild(sf,master,current))
+				}
+			})
+			return out.join('&')	 	
 		}
 		return undefined
 	
 	}
-	function _rebuild(f,b,r,type){
-		var i=0, max = f.length, commentStart = false
-		, out = [], temp = '', n, replaceIndex = -1
-		, extra =0
-		for (;i<max;i+=1){
-			//skip all comments
-			if (commentStart && f[i] ==  '"'){
-				commentStart = false
-			}
-			if (!commentStart && f[i] == '"'){
-				commentStart = true
-			}
-
-			//if it is col type
-			if (type == 'col' && !commentStart){
-				if (/[A-Z]/.test(f[i])){
-					if (!temp){
-						replaceIndex = i
-					}
-					temp +=f[i]
+	function _rebuild(f,m,c){
+		if (/\$?[A-Z]+\$?[0-9]+/.test(f)){
+			return f.replace(/^(.*\$?)([A-Z]+)(\$?)([0-9]+)(.*)$/,function(){
+				var n = U.alpha2Num(arguments[2]), arg1 = _rebuild(arguments[1],m,c),arg2 = arguments[2],arg4 = arguments[4]
+				if (!/\$$/.test(arg1)){
+					arg2 = U.num2Alpha(c.col+n-m.col)
 				}
-				
-				if (temp && /[0-9]/.test(f[i])){
-					n = U.alpha2Num(temp)
-					n = r + n-b
-					n = U.num2Alpha(n)
-					out.push({index:replaceIndex,word:n,length:temp.length})		
-					temp = ''
-					replaceIndex = -1
+				if (!arguments[3]){
+					arg4 = +c.row+1+(+arguments[4])-(m.row+1)
 				}
-			}
-
-			//if it is row type
-			//TODO: require test 
-			if (type == 'row' && !commentStart){
-				if (/[A-Z]{1}[0-9]{1}/.test(f[i]+f[i+1])){
-					replaceIndex = i+1
-				}
-				if (replaceIndex >0){
-					temp +=f[i]
-				}
-				if (temp && /[^0-9]/.test(f[i])){
-					n = r+temp-b
-					//console.log(b+' '+r+' '+n)
-					out.push({index:replaceIndex,word:n})
-					temp = ''
-					replaceIndex = -1
-				}
-			}
-
+				return arg1+arg2+arguments[3]+arg4+arguments[5]
+			})
 		}
-		out.forEach(function(item,index){
-			if (out[index+1]){
-				extra += item.word.length-item.length
-				out[index+1].index += extra	
-			}
-			f = f.substring(0,item.index)+item.word+f.substring(item.index+item.length)
-		})
 		return f
 	}
 	return {
@@ -182,11 +142,12 @@ module.exports = (function(){
 						if (typeof formula === 'object'){
 							//real formula
 							if (formula._){
+						//		console.log(formula)
 								if (formula.$.si && formula.$.ref){
 									sharedFormulas[formula.$.si] = {
 										r:reference
 										,f:formula._
-										,ref:parseFormulaReference(formula.$.ref)
+										, ref:formula.$.ref
 									}
 								}
 							
@@ -244,7 +205,7 @@ module.exports = (function(){
 					if (cellRaw.v){
 						//value changed
 						if (cell.value != getValue(cellRaw,cell.type,sharedStrings)){
-							if (typeof cell.value != 'number'){
+							if (isNaN(cell.value)){
 								cellRaw.v = []
 								index = sharedStrings.indexOf(cell.value) 
 								if (index < 0){
@@ -265,7 +226,7 @@ module.exports = (function(){
 					}else if(cell.value){ 
 						// new cell
 						cellRaw.v = []
-						if (typeof cell.value != 'number'){
+						if (isNaN(cell.value)){
 							cellRaw.v = []
 							index = sharedStrings.indexOf(cell.value) 
 							if (index < 0){

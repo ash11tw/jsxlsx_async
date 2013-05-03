@@ -29,7 +29,9 @@ module.exports = function(path,cb){
 }
 */
 	var o = Js('./systemLoad.xlsx',function(err,o){
-		o.getSheetDataByName('CRITERIA',function(err,data){
+		o.getSheetByName('CRITERIA',function(err,data){
+			//console.log(data)
+			return
 			var i = 8, max = data.length, out = [],out1={}, temp
 			//get header string
 			, keywords = getKeywords(data[0])
