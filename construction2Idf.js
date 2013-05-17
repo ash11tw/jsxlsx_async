@@ -1,7 +1,7 @@
 var Js = require('./index')
 	,fs = require('fs')
 	
-var o = new Js('./construction.xlsx',function(e,o){
+var o = new Js('./constructionm.xlsx',function(e,o){
 	o.getSheetDataByName('Matrix',function(err,data){
 		//console.log(data)
 		var moduleText = 'module.exports = {'+"\n",hhaName,idfName,altName,names = [],first = true
