@@ -664,9 +664,9 @@ function qname (name) {
 function attrib (parser) {
   if (!parser.strict) parser.attribName = parser.attribName[parser.looseCase]()
 
-  if (parser.attribList.hasOwnProperty(parser.attribName) ||
+  if (parser.attribList.indexOf(parser.attribName) !== -1 ||
       parser.tag.attributes.hasOwnProperty(parser.attribName)) {
-   return parser.attribName = parser.attribValue = ""
+    return parser.attribName = parser.attribValue = ""
   }
 
   if (parser.opt.xmlns) {
@@ -719,11 +719,12 @@ function openTag (parser, selfClosing) {
     var qn = qname(parser.tagName)
     tag.prefix = qn.prefix
     tag.local = qn.local
-    tag.uri = tag.ns[qn.prefix] || qn.prefix
+    tag.uri = tag.ns[qn.prefix] || ""
 
     if (tag.prefix && !tag.uri) {
       strictFail(parser, "Unbound namespace prefix: "
                        + JSON.stringify(parser.tagName))
+      tag.uri = qn.prefix
     }
 
     var parent = parser.tags[parser.tags.length - 1] || parser

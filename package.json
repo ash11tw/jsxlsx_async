@@ -1,7 +1,7 @@
 {
   "name": "jsxlsx",
-  "version": "0.0.0",
-  "description": "a pur javascript libray to read and write xlsx file",
+  "version": "0.0.1",
+  "description": "a pure javascript libray to read and write (experimental) xlsx file",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
@@ -18,5 +18,11 @@
     "node",
     "js",
     "xlsx"
-  ]
+  ],
+  "dependencies": {
+    "sax": "~0.5.4",
+    "unzip": "~0.1.7",
+    "promised-io": "~0.3.3",
+    "node-zip": "~1.0.1"
+  }
 }
