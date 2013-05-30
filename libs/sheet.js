@@ -23,7 +23,7 @@ Sheet.prototype = {
 		if (typeof ref === 'string'){
 			ref = Utils.cellReference(ref)
 		}
-		if (!ref.col || !ref.row){
+		if (typeof ref !== 'object' || !('col' in ref) || !('row' in ref)){
 			throw "this is not valid reference string"
 		}
 		row = this.getRow(ref.row)

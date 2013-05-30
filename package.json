@@ -1,17 +1,17 @@
 {
-  "name": "jsxlsx",
+  "name": "jsxlsx_async",
   "version": "0.0.1",
-  "description": "a pure javascript libray to read and write (experimental) xlsx file",
+  "description": "a simple javascript libray to read and write (experimental) xlsx file asynchronously",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "make test"
   },
   "repository": {
     "type": "git",
     "url": "https://github.com/ash11tw/jsxlsx.git"
   },
   "author": "Kyle Lu",
-  "license": "BSD",
+  "license": "MIT",
   "readmeFilename": "README.md",
   "gitHead": "a16c0d6f49eee17f46e13036772c85573492babd",
   "keywords": [
