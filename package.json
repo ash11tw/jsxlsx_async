@@ -1,7 +1,7 @@
 {
   "name": "jsxlsx_async",
   "version": "0.0.1",
-  "description": "a simple javascript libray to read and write (experimental) xlsx file asynchronously",
+  "description": "a simple javascript libray to read xlsx file asynchronously",
   "main": "index.js",
   "scripts": {
     "test": "make test"
@@ -17,7 +17,8 @@
   "keywords": [
     "node",
     "js",
-    "xlsx"
+    "xlsx",
+    "async"
   ],
   "dependencies": {
     "sax": "~0.5.4",
