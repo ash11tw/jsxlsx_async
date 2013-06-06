@@ -1,6 +1,6 @@
 {
   "name": "jsxlsx_async",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "a simple javascript libray to read xlsx file asynchronously",
   "main": "index.js",
   "scripts": {
@@ -8,7 +8,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/ash11tw/jsxlsx.git"
+    "url": "https://github.com/ash11tw/jsxlsx_async.git"
   },
   "author": "Kyle Lu",
   "license": "MIT",

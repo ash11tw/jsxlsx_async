@@ -2,10 +2,13 @@
 ## Introduction
 This is a simple library to read Microsoft Excel file (.xslx only) asynchronously. It can avoid "out of memory" problem when reading extra large files. Right now it also allow you to "edit" the file (read data first and put the data back to the file) synchronously.  
 
+## Installation
+	npm install jsxlsx_async
+
 ## Usage
 
 
-	var xlsx= require('../index')
+	var xlsx= require('jsxlsx_async')
 	xlsx('/yourpath',function(err,wb){
 		if (err){
 			//handling err
