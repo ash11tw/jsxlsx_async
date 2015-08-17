@@ -1,6 +1,6 @@
 var fs = require('fs')
 	, unzip = require('unzip')
-        , Promise = require("promised-io/promise")
+		, Promise = require("promised-io/promise")
 
 require('node-zip')
 
@@ -70,29 +70,32 @@ module.exports = function(file,cb){
 		fs.writeFile('/home/luk/Documents/jsxlsx/1.txt',ToXML(out),function(er){
 			if (er) console.log(er)
 		})
-				
+
 				if (!zipper){
-					xlsx = fs.readFileSync(file,'binary')	
+					xlsx = fs.readFileSync(file,'binary')
 					zipper = new JSZip(xlsx,{base64:false,checkCRC32:true})
-				}	
+				}
 				zipper.file('xl/sharedStrings.xml',ToXML(_originalSharedStrings))
-			
+
 				if (_sheets[sheetName]){
 					zipper.file(_sheets[sheetName].path,ToXML(out))
 				}else {
 					//TODO: create a new sheet
 					throw "the library cannot create a new sheet yet"
-				}	
-				
+				}
+
 			}
 			, output:function(file){
 				var data = zipper.generate({type:'string',compression:'DEFLATE'})
 				fs.writeFileSync(file, data, 'binary')
 			}
-		}	
+		}
 	//loading excel file
 	if (file && typeof file === 'string' && fs.existsSync(file)){
 		var unz = unzip.Parse()
+		unz.on('error', function(error){
+			cb(error);
+		});
 		unz.on('entry', function(entry) {
 			var out = ''
 			switch (entry.path){
@@ -102,8 +105,8 @@ module.exports = function(file,cb){
 						data.Relationships.Relationship.forEach(function(ref){
 							reference[ref.$.Id] = ref.$.Target
 						})
-						deferred1.resolve(reference)		
-						
+						deferred1.resolve(reference)
+
 					})
 					break
 				case 'xl/workbook.xml':
@@ -116,9 +119,9 @@ module.exports = function(file,cb){
 									, path:'xl/'+reference[sheet.$['r:id']]
 								}
 							})
-							deferred2.resolve(out)	
-						})	
-						
+							deferred2.resolve(out)
+						})
+
 					})
 					break
 				case 'xl/sharedStrings.xml':
@@ -144,12 +147,12 @@ module.exports = function(file,cb){
 		})
 		fs.createReadStream(file)
 		.pipe(unz)
-	
+
 		Promise.all(deferred2.promise,deferred3.promise).then(function(values){
 			_sheets = values[0]
 			_sharedStrings = values[1]
 			cb(null,workbook)
-		},function(err){cb(err)})	
+		},function(err){cb(err)})
 	}else {
 		cb("file is required")
 	}
